@@ -1,4 +1,6 @@
 class ProfilesController < ApplicationController
+  before_action :authenticate_user!
+  before_action :only_current_user
   
   #GET to /users/:user_id/profile/new
   def new
@@ -32,7 +34,7 @@ class ProfilesController < ApplicationController
     # Retrieve that user's profile
     @profile = @user.profile
     # Mass assign edited profile attributes and save (update)
-    if @profile.update_attributes(profile_params)
+    if @profile.update_attgributes(profile_params)
       flash[:success] = "Profile updated!"
       redirect_to user_path(id: params[:user_id] )
       #Redirect user to their profile page
@@ -44,5 +46,10 @@ class ProfilesController < ApplicationController
   private
     def profile_params
       params.require(:profile).permit(:first_name, :last_name, :avatar , :job_title, :phone_number, :contact_email, :description)
+    end
+    
+    def only_current_user
+      @user = User.find ( param[:user_id] )
+      redirect_to(root_url) unless @user == current_user
     end
 end
